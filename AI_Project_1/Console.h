@@ -8,7 +8,7 @@
 #include <initializer_list>
 
 // Shortcuts
-//#define DEBUG
+#define DEBUG
 
 #define C_CONSOLE	ConsoleLogger::Console::instance()
 

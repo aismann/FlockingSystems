@@ -4,28 +4,29 @@
 
 class Node2D;
 
-class Scene: public std::enable_shared_from_this<Scene>
+class Scene
 {
 public:
-	using Ptr = std::shared_ptr<Scene>;
-
 	/*********** Constructor / Destructor */
 	Scene();
 	virtual ~Scene();
 
 	/*********** Base */
+	virtual void init();
+	virtual void exit();
+
 	virtual void baseOnEvent(sf::Event& _event) final;
 	virtual void baseOnUpdate(double _dt) final;
 	virtual void baseOnDraw(sf::RenderTarget& _target) final;
 
-	/*********** Base */
+	/*********** To implement in game */
 	virtual void onEvent(sf::Event& _event);
 	virtual void onUpdate(double _dt);
 	virtual void onDraw(sf::RenderTarget& _target);
 
 	/*********** Node tree */
-	void addNode(std::shared_ptr<Node2D> _node);
-	void deleteNode(std::shared_ptr<Node2D> _node);
+	void addNode(Node2D* _node);
+	void deleteNode(Node2D* _node);
 
 	/*********** Settings */
 	bool isForceDraw();
@@ -42,6 +43,6 @@ private:
 	bool forceUpdate	= false; // Update when not on the top of state stack
 
 	/*********** Node tree */
-	std::vector<std::shared_ptr<Node2D>> nodeList;
+	std::vector<Node2D*> nodeList;
 };
 

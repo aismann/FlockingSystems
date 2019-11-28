@@ -5,9 +5,6 @@
 class SceneManager
 {
 public:
-	/*********** Singleton */
-	static SceneManager& getInstance();
-
 	/*********** Constructor / Destructor */
 	SceneManager();
 	virtual ~SceneManager();
@@ -20,18 +17,16 @@ public:
 	/*********** Pop / Push from stack */
 	bool isEmpty();
 
-	void popScene(Scene::Ptr _scene);
-	void pushScene(Scene::Ptr _scene);
+	void popScene(Scene* _scene);
+	void pushScene(Scene* _scene);
 
-	void pushSceneNow(Scene::Ptr _scene);
+	void pushSceneNow(Scene* _scene);
 
 private:
 	/*********** List of nodes in this scene */
-	std::vector<Scene::Ptr> sceneList;
+	std::vector<Scene*> sceneList;
 
 	/*********** Push handle */
-	std::vector<Scene::Ptr> sceneToPop;
-	std::vector<Scene::Ptr> sceneToPush;
+	std::vector<Scene*> sceneToPop;
+	std::vector<Scene*> sceneToPush;
 };
-
-#define SceneManagerInstance SceneManager::getInstance() 

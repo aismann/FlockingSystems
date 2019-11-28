@@ -1,18 +1,15 @@
 #include "SceneManager.h"
 #include <algorithm>
 
-SceneManager& SceneManager::getInstance()
-{
-	static SceneManager instance;
-	return instance;
-}
-
 SceneManager::SceneManager()
 {
 }
 
 SceneManager::~SceneManager()
 {
+	for (auto scene : sceneList) {
+		delete scene;
+	}
 }
 
 void SceneManager::onEvent(sf::Event& _event)
@@ -35,13 +32,20 @@ void SceneManager::onUpdate(double _dt)
 
 	// Pop pending scenes
 	auto it = sceneList.end();
-	for (auto& s : sceneToPop) {
+	for (auto s : sceneToPop) {
+		s->exit();
+		delete s;
+
 		it = std::remove(sceneList.begin(), sceneList.end(), s);
 	}
 	sceneList.erase(it, sceneList.end());
+	sceneToPop.clear();
 
 	// Push pending scene
-	sceneList.insert(sceneList.end(), sceneToPush.begin(), sceneToPush.end());
+	for (auto s : sceneToPush) {
+		s->init();
+		sceneList.push_back(s);
+	}
 	sceneToPush.clear();
 }
 
@@ -62,32 +66,33 @@ bool SceneManager::isEmpty()
 	return sceneList.empty();
 }
 
-void SceneManager::popScene(Scene::Ptr _scene)
+void SceneManager::popScene(Scene* _scene)
 {
 	auto it = std::find(sceneToPop.begin(), sceneToPop.end(), _scene);
-	if ( it == sceneToPop.end() ) {
+	if ( it != sceneToPop.end() ) {
 		return;
 	}
 
-	sceneToPop.push_back(std::move(_scene));
+	sceneToPop.push_back(_scene);
 }
 
-void SceneManager::pushScene(Scene::Ptr _scene)
+void SceneManager::pushScene(Scene* _scene)
 {
 	auto it = std::find(sceneToPush.begin(), sceneToPush.end(), _scene);
 	if (it != sceneToPush.end()) {
 		return;
 	}
 
-	sceneToPush.push_back(std::move(_scene));
+	sceneToPush.push_back(_scene);
 }
 
-void SceneManager::pushSceneNow(Scene::Ptr _scene)
+void SceneManager::pushSceneNow(Scene* _scene)
 {
 	auto it = std::find(sceneToPush.begin(), sceneToPush.end(), _scene);
 	if (it != sceneToPush.end()) {
 		return;
 	}
 	
-	sceneList.push_back(std::move(_scene));
+	_scene->init();
+	sceneList.push_back(_scene);
 }
