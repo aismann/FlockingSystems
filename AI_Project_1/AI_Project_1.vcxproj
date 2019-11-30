@@ -160,27 +160,36 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ContactListener.cpp" />
+    <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="ColliderCircle.cpp" />
+    <ClCompile Include="CollisionResolver.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainScene.cpp" />
     <ClCompile Include="PhysicNode.cpp" />
+    <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="PlayerUnit.cpp" />
     <ClCompile Include="Node2D.cpp" />
+    <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Shape2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Collider.h" />
+    <ClInclude Include="ColliderCircle.h" />
+    <ClInclude Include="CollisionResolver.h" />
     <ClInclude Include="Console.h" />
-    <ClInclude Include="ContactListener.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MainScene.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="PhysicNode.h" />
+    <ClInclude Include="PhysicsEngine.h" />
     <ClInclude Include="PlayerUnit.h" />
     <ClInclude Include="Node2D.h" />
+    <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Shape2D.h" />

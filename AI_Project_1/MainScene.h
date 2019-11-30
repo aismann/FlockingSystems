@@ -2,7 +2,8 @@
 #include "Scene.h"
 #include "PlayerUnit.h"
 
-class MainScene : public Scene
+class MainScene : 
+	public fe::Scene
 {
 public:
 	/*********** Constructor / Destructor */
@@ -19,6 +20,6 @@ public:
 
 private:
 	/*********** Units */
-	PlayerUnit* unit;
+	std::shared_ptr<PlayerUnit> unit;
 };
 

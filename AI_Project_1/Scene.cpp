@@ -3,100 +3,118 @@
 #include "Node2D.h"
 #include "Engine.h"
 
-Scene::Scene()
-{
+namespace fe {
 
-}
-
-Scene::~Scene()
-{
-	for (auto node : nodeList) {
-		delete node;
-	}
-}
-
-void Scene::init()
-{
-}
-
-void Scene::exit()
-{
-}
-
-void Scene::baseOnEvent(sf::Event& _event)
-{
-	for (auto node : nodeList) {
-		node->onBaseEvent(_event);
+	Scene::Scene()
+	{
 	}
 
-	this->onEvent(_event);
-}
-
-void Scene::baseOnUpdate(double _dt)
-{
-	for (auto node : nodeList) {
-		node->onBaseUpdate(_dt);
+	Scene::~Scene()
+	{
 	}
 
-	this->onUpdate(_dt);
-}
-
-void Scene::baseOnDraw(sf::RenderTarget& _target)
-{
-	for (auto node : nodeList) {
-		node->onBaseDraw(_target);
+	void Scene::init()
+	{
 	}
 
-	this->onDraw(_target);
-}
-
-void Scene::onEvent(sf::Event& _event)
-{
-	// TO BE IMPLEMENTED IN DERIVED SCENE
-}
-
-void Scene::onUpdate(double _dt)
-{
-	// TO BE IMPLEMENTED IN DERIVED SCENE
-}
-
-void Scene::onDraw(sf::RenderTarget& _target)
-{
-	// TO BE IMPLEMENTED IN DERIVED SCENE
-}
-
-void Scene::addNode(Node2D* _node)
-{
-	auto it = std::find(nodeList.begin(), nodeList.end(), _node);
-	if (it != nodeList.end()) {
-		return;
+	void Scene::exit()
+	{
 	}
 
-	nodeList.push_back(std::move(_node));
-}
+	void Scene::baseOnEvent(sf::Event& _event)
+	{
+		this->onEvent(_event);
 
-void Scene::deleteNode(Node2D* _node)
-{
-	// Delete all _node from nodeList
-	nodeList.erase(std::remove(nodeList.begin(), nodeList.end(), _node), nodeList.end());
-}
+		for (auto& child : children) {
+			if (child->isDisabled()) {
+				continue;
+			}
 
-bool Scene::isForceDraw()
-{
-	return forceDraw;
-}
+			child->onBaseEvent(_event);
+		}
+	}
 
-bool Scene::isForceUpdate()
-{
-	return forceUpdate;
-}
+	void Scene::baseOnUpdate(double _dt)
+	{
+		this->onUpdate(_dt);
 
-void Scene::popFromStack()
-{
-	EngineInstance.getSceneManager().popScene(this);
-}
+		// Delete flagged childs
+		auto pastEndIt = std::remove_if(children.begin(), children.end(), [](auto node) {return node->isDeleted(); });
+		children.erase(pastEndIt, children.end());
 
-void Scene::pushToStack()
-{
-	EngineInstance.getSceneManager().pushScene(this);
+		// Update all childs
+		for (auto child : children) {
+			if (child->isDisabled()) {
+				continue;
+			}
+
+			child->onBaseUpdate(_dt);
+		}
+
+		// Add requested childs
+		for (auto ch : reqChildren) {
+			//s->init();
+			children.push_back(ch);
+		}
+		reqChildren.clear();
+	}
+
+	void Scene::baseOnDraw(sf::RenderTarget& _target)
+	{
+		this->onDraw(_target);
+
+		for (auto child : children) {
+			if (child->isDisabled()) {
+				continue;
+			}
+
+			child->onBaseDraw(_target);
+		}
+	}
+
+	void Scene::onEvent(sf::Event& _event)
+	{
+		// TO BE IMPLEMENTED IN DERIVED SCENE
+	}
+
+	void Scene::onUpdate(double _dt)
+	{
+		// TO BE IMPLEMENTED IN DERIVED SCENE
+	}
+
+	void Scene::onDraw(sf::RenderTarget& _target)
+	{
+		// TO BE IMPLEMENTED IN DERIVED SCENE
+	}
+
+	void Scene::addChild(std::shared_ptr<Node2D> _node)
+	{
+		auto it = std::find(children.begin(), children.end(), _node);
+		if (it != children.end()) {
+			return;
+		}
+
+		reqChildren.push_back(_node);
+	}
+
+	bool Scene::isForceDraw()
+	{
+		return forceDraw;
+	}
+
+	bool Scene::isForceUpdate()
+	{
+		return forceUpdate;
+	}
+
+	void Scene::popThisFromStack()
+	{
+		EngineInstance.getSceneManager()->reqPopScene(shared_from_this());
+	}
+
+	void Scene::pushThisToStack()
+	{
+		EngineInstance.getSceneManager()->reqPushScene(shared_from_this());
+	}
+
 }

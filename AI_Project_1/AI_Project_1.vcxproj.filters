@@ -55,17 +55,29 @@
     <Filter Include="Header Files\Engine\Nodes">
       <UniqueIdentifier>{85dd8543-9521-482a-b936-46993cd66325}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Physics">
-      <UniqueIdentifier>{41eb10c7-4c18-4ff3-befc-7bee4b74410e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Physics">
-      <UniqueIdentifier>{0f28f0a3-9f36-4843-91c9-d24447a83ce6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Engine\Nodes\Physics">
       <UniqueIdentifier>{3acadc55-bed3-4c63-b60d-a7fb566b20a5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Engine\Nodes\Physics">
       <UniqueIdentifier>{38647b96-d58e-40a0-82fa-2f39ff5f019b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\Units">
+      <UniqueIdentifier>{6af7802d-5f36-4360-ad80-f9193945edc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Units">
+      <UniqueIdentifier>{de274274-1640-4816-ba34-a7bc22cc32bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Physics">
+      <UniqueIdentifier>{2488d1d1-96bc-4040-aae8-4fc29e6b7888}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Physics">
+      <UniqueIdentifier>{f5a272ac-d867-4be6-867d-5394d32c6fd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Physics\Colliders">
+      <UniqueIdentifier>{fbb59661-5c71-4c83-8b8a-08bb38fb2fea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Physics\Colliders">
+      <UniqueIdentifier>{2d56922f-484d-4bcc-9212-6d9df122c244}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -84,9 +96,6 @@
     <ClCompile Include="MainScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerUnit.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
     <ClCompile Include="Engine.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
@@ -96,11 +105,26 @@
     <ClCompile Include="Shape2D.cpp">
       <Filter>Source Files\Engine\Nodes</Filter>
     </ClCompile>
-    <ClCompile Include="ContactListener.cpp">
-      <Filter>Source Files\Engine\Physics</Filter>
-    </ClCompile>
     <ClCompile Include="PhysicNode.cpp">
       <Filter>Source Files\Engine\Nodes\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerUnit.cpp">
+      <Filter>Source Files\Game\Units</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsEngine.cpp">
+      <Filter>Source Files\Engine\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>Source Files\Engine\Physics\Colliders</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionResolver.cpp">
+      <Filter>Source Files\Engine\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ColliderCircle.cpp">
+      <Filter>Source Files\Engine\Physics\Colliders</Filter>
+    </ClCompile>
+    <ClCompile Include="Ray.cpp">
+      <Filter>Source Files\Game\Units</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -119,9 +143,6 @@
     <ClInclude Include="MainScene.h">
       <Filter>Header Files\Game\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerUnit.h">
-      <Filter>Header Files\Game</Filter>
-    </ClInclude>
     <ClInclude Include="Engine.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
@@ -131,11 +152,29 @@
     <ClInclude Include="Shape2D.h">
       <Filter>Header Files\Engine\Nodes</Filter>
     </ClInclude>
-    <ClInclude Include="ContactListener.h">
-      <Filter>Header Files\Engine\Physics</Filter>
-    </ClInclude>
     <ClInclude Include="PhysicNode.h">
       <Filter>Header Files\Engine\Nodes\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerUnit.h">
+      <Filter>Header Files\Game\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Header Files\Engine\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsEngine.h">
+      <Filter>Header Files\Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Header Files\Engine\Physics\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionResolver.h">
+      <Filter>Header Files\Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderCircle.h">
+      <Filter>Header Files\Engine\Physics\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="Ray.h">
+      <Filter>Header Files\Game\Units</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,47 +1,46 @@
 #pragma once
-#include "SceneManager.h"
-#include "InputManager.h"
+#include <memory>
 
-#include "Console.h"
-#include "SceneManager.h"
-#include "MainScene.h"
-#include "ContactListener.h"
+namespace sf {
+	class RenderWindow;
+}
 
-class Engine
-{
-public:
-	/*********** Singleton */
-	static Engine& getInstance();
+namespace fe {
+	class SceneManager;
+	class InputManager;
+	class PhysicsEngine;
 
-	/*********** Manage */
-	void start(int argc, char** argv);
-	void shutdown();
+	class Engine
+	{
+	public:
+		/*********** Singleton */
+		static Engine& getInstance();
 
-	/*********** Subsystems */
-	SceneManager&	getSceneManager();
-	InputManager&	getInputManager();
+		/*********** Manage */
+		void start(int argc, char** argv);
+		void shutdown();
 
-	b2World*		getWorld();
+		/*********** Subsystems */
+		std::shared_ptr<SceneManager> getSceneManager();
+		std::shared_ptr<InputManager> getInputManager();
+		std::shared_ptr<sf::RenderWindow> getMainWindow();
 
-private:
-	/*********** Constructor / Destructor */
-	Engine();
-	~Engine();
+	private:
+		/*********** Constructor / Destructor */
+		Engine();
+		~Engine();
 
-private:
-	/*********** Manage */
-	bool isStarted;
+	private:
+		/*********** Manage */
+		bool							isStarted;
 
-	/*********** Subsystems */
-	SceneManager	sceneManager;
-	InputManager	inputManager;
+		/*********** Subsystems */
+		std::shared_ptr<sf::RenderWindow> mainWindow;
 
-	b2World*			physicWorld;
-	b2ContactListener*	contactListener;
-};
+		std::shared_ptr<SceneManager>	sceneManager;
+		std::shared_ptr<InputManager>	inputManager;
+		std::shared_ptr<PhysicsEngine>	physicsEngine;
+	};
 
-#define EngineInstance			Engine::getInstance()
-#define InputManagerInstance	Engine::getInstance().getInputManager()
-#define SceneManagerInstance	Engine::getInstance().getSceneManager()
-#define WorldInstance			Engine::getInstance().getWorld()
-
+	#define EngineInstance			Engine::getInstance()
+}

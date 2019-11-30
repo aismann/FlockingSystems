@@ -1,102 +1,96 @@
 #include "Engine.h"
 
 #include <SFML/Graphics.hpp>
-#include <Box2D/Box2D.h>
 
-Engine& Engine::getInstance()
-{
-	static Engine instance;
-	return instance;
-}
+#include "SceneManager.h"
+#include "InputManager.h"
+#include "PhysicsEngine.h"
 
-void Engine::start(int argc, char** argv)
-{
-	/********** Box2D Initialization **********/
-	B2_NOT_USED(argc);
-	B2_NOT_USED(argv);
+#include "Console.h"
 
-	b2Vec2 gravity(0.0f, -10.0f);
-	physicWorld = new b2World(gravity);
+#include "MainScene.h"
 
-	int32 velocityIterations = 6;
-	int32 positionIterations = 2;
+namespace fe {
 
-	contactListener = new ContactListener();
-	physicWorld->SetContactListener(this->contactListener);
-	/********** Box2D Initialization_END ******/
-
-	sf::RenderWindow window(sf::VideoMode(800, 600), "AI Project 1");
-	const double DELTA = 1.0 / 120.0;
-	
-	sceneManager.pushSceneNow(new MainScene());
-
-	// Global clock
-	sf::Clock clock;
-	double time = 0.0;
-
-	this->isStarted = true;
-	while (window.isOpen() && !sceneManager.isEmpty() && isStarted)
+	Engine& Engine::getInstance()
 	{
-		// Input
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-
-			sceneManager.onEvent(event);
-			inputManager.takeEvent(event);
-		}
-
-		// Update
-		if (time + clock.getElapsedTime().asSeconds() > DELTA) {
-			time += clock.getElapsedTime().asSeconds();
-			clock.restart();
-
-			while (time > DELTA) {
-				sceneManager.onUpdate(DELTA);
-
-				physicWorld->Step((float)DELTA, velocityIterations, positionIterations);
-
-				time -= DELTA;
-			}
-		}
-
-		// Draw
-		window.clear();
-		sceneManager.onDraw(window);
-		window.display();
+		static Engine instance;
+		return instance;
 	}
-}
 
-void Engine::shutdown()
-{
-	this->isStarted = false;
-}
+	void Engine::start(int argc, char** argv)
+	{
+		this->mainWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(800, 600), "AI Project 1");
+		const double DELTA = 1.0 / 120.0;
 
-SceneManager& Engine::getSceneManager()
-{
-	return this->sceneManager;
-}
+		sceneManager->pushSceneNow(std::make_shared<MainScene>());
 
-InputManager& Engine::getInputManager()
-{
-	return this->inputManager;
-}
+		// Global clock
+		sf::Clock clock;
+		double time = 0.0;
 
-b2World* Engine::getWorld()
-{
-	return physicWorld;
-}
+		this->isStarted = true;
+		while (mainWindow->isOpen() && !sceneManager->isEmpty() && isStarted)
+		{
+			// Input
+			sf::Event event;
+			while (mainWindow->pollEvent(event))
+			{
+				if (event.type == sf::Event::Closed)
+					mainWindow->close();
 
-Engine::Engine():
-	isStarted(false),
-	contactListener(nullptr),
-	physicWorld(nullptr)
-{
-}
+				sceneManager->onEvent(event);
+				inputManager->takeEvent(event);
+			}
 
-Engine::~Engine()
-{
-	delete this->contactListener;
+			// Update
+			if (time + clock.getElapsedTime().asSeconds() > DELTA) {
+				time += clock.getElapsedTime().asSeconds();
+				clock.restart();
+
+				while (time > DELTA) {
+					sceneManager->onUpdate(DELTA);
+					time -= DELTA;
+				}
+			}
+
+			// Draw
+			mainWindow->clear();
+			sceneManager->onDraw(*mainWindow);
+			mainWindow->display();
+		}
+	}
+
+	void Engine::shutdown()
+	{
+		this->isStarted = false;
+	}
+
+	std::shared_ptr<SceneManager> Engine::getSceneManager()
+	{
+		return this->sceneManager;
+	}
+
+	std::shared_ptr<InputManager> Engine::getInputManager()
+	{
+		return this->inputManager;
+	}
+
+	std::shared_ptr<sf::RenderWindow> Engine::getMainWindow()
+	{
+		return this->mainWindow;
+	}
+
+	Engine::Engine() :
+		isStarted(false)
+	{
+		this->sceneManager = std::make_shared<SceneManager>();
+		this->inputManager = std::make_shared<InputManager>();
+		this->physicsEngine = std::make_shared<PhysicsEngine>();
+	}
+
+	Engine::~Engine()
+	{
+	}
+
 }

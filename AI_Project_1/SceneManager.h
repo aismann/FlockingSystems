@@ -2,31 +2,35 @@
 #include <vector>
 #include "Scene.h"
 
-class SceneManager
-{
-public:
-	/*********** Constructor / Destructor */
-	SceneManager();
-	virtual ~SceneManager();
+namespace fe {
 
-	/*********** Base */
-	void onEvent(sf::Event& _event);
-	void onUpdate(double _dt);
-	void onDraw(sf::RenderTarget& _target);
+	class SceneManager
+	{
+	public:
+		/*********** Constructor / Destructor */
+		SceneManager();
+		virtual ~SceneManager();
 
-	/*********** Pop / Push from stack */
-	bool isEmpty();
+		/*********** Base */
+		void onEvent(sf::Event& _event);
+		void onUpdate(double _dt);
+		void onDraw(sf::RenderTarget& _target);
 
-	void popScene(Scene* _scene);
-	void pushScene(Scene* _scene);
+		/*********** Pop / Push from stack */
+		bool isEmpty();
 
-	void pushSceneNow(Scene* _scene);
+		void reqPopScene(std::shared_ptr<Scene> _scene);
+		void reqPushScene(std::shared_ptr<Scene> _scene);
 
-private:
-	/*********** List of nodes in this scene */
-	std::vector<Scene*> sceneList;
+		void pushSceneNow(std::shared_ptr<Scene> _scene);
 
-	/*********** Push handle */
-	std::vector<Scene*> sceneToPop;
-	std::vector<Scene*> sceneToPush;
-};
+	private:
+		/*********** List of nodes in this scene */
+		std::vector<std::shared_ptr<Scene>> sceneList;
+
+		/*********** Push handle */
+		std::vector<std::shared_ptr<Scene>> sceneToPop;
+		std::vector<std::shared_ptr<Scene>> sceneToPush;
+	};
+
+}

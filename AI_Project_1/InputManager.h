@@ -4,23 +4,26 @@
 
 #include <bitset>
 
-class InputManager
-{
-public:
-	using KeyCode = sf::Keyboard::Key;
+namespace fe {
 
-	/*********** Constructor / Destructor */
-	InputManager();
-	~InputManager();
+	class InputManager
+	{
+	public:
+		using KeyCode = sf::Keyboard::Key;
 
-	/*********** Check events */
-	bool isKeyPressed(KeyCode _key);
+		/*********** Constructor / Destructor */
+		InputManager();
+		~InputManager();
 
-	/*********** Handle events */
-	void takeEvent(sf::Event& _event);
+		/*********** Check events */
+		bool isKeyPressed(KeyCode _key);
 
-private:
-	/*********** Events holder */
-	std::bitset<KeyCode::KeyCount> keyPressedMap;
-};
+		/*********** Handle events */
+		void takeEvent(sf::Event& _event);
 
+	private:
+		/*********** Events holder */
+		std::bitset<KeyCode::KeyCount> keyPressedMap;
+	};
+
+}

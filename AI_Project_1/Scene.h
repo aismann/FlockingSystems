@@ -2,47 +2,51 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
-class Node2D;
+namespace fe {
 
-class Scene
-{
-public:
-	/*********** Constructor / Destructor */
-	Scene();
-	virtual ~Scene();
+	class Node2D;
 
-	/*********** Base */
-	virtual void init();
-	virtual void exit();
+	class Scene:
+		public std::enable_shared_from_this<Scene>
+	{
+	public:
+		/*********** Constructor / Destructor */
+		Scene();
+		virtual ~Scene();
 
-	virtual void baseOnEvent(sf::Event& _event) final;
-	virtual void baseOnUpdate(double _dt) final;
-	virtual void baseOnDraw(sf::RenderTarget& _target) final;
+		/*********** Base */
+		virtual void init();
+		virtual void exit();
 
-	/*********** To implement in game */
-	virtual void onEvent(sf::Event& _event);
-	virtual void onUpdate(double _dt);
-	virtual void onDraw(sf::RenderTarget& _target);
+		virtual void baseOnEvent(sf::Event& _event) final;
+		virtual void baseOnUpdate(double _dt) final;
+		virtual void baseOnDraw(sf::RenderTarget& _target) final;
 
-	/*********** Node tree */
-	void addNode(Node2D* _node);
-	void deleteNode(Node2D* _node);
+		/*********** To implement in game */
+		virtual void onEvent(sf::Event& _event);
+		virtual void onUpdate(double _dt);
+		virtual void onDraw(sf::RenderTarget& _target);
 
-	/*********** Settings */
-	bool isForceDraw();
-	bool isForceUpdate();
+		/*********** Node tree */
+		void addChild(std::shared_ptr<Node2D> _node);
 
-public:
-	/*********** Pop / Push from stack */
-	void popFromStack();
-	void pushToStack();
+		/*********** Settings */
+		bool isForceDraw();
+		bool isForceUpdate();
 
-private:
-	/*********** Settings */
-	bool forceDraw		= false; // Draw when not on the top of state stack
-	bool forceUpdate	= false; // Update when not on the top of state stack
+	public:
+		/*********** Pop / Push from stack */
+		void popThisFromStack();
+		void pushThisToStack();
 
-	/*********** Node tree */
-	std::vector<Node2D*> nodeList;
-};
+	private:
+		/*********** Settings */
+		bool forceDraw = false; // Draw when not on the top of state stack
+		bool forceUpdate = false; // Update when not on the top of state stack
 
+		/*********** Node tree */
+		std::vector<std::shared_ptr<Node2D>> children;
+		std::vector<std::shared_ptr<Node2D>> reqChildren; // Children requested to push
+	};
+
+}

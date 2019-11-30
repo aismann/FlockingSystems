@@ -1,13 +1,28 @@
 #pragma once
-#include <Box2D/Box2D.h>
+#include "Node2D.h"
 
-class PhysicNode
-{
-public:
-	/*********** Contact event handlers */
-	virtual void onBeginContact(b2Contact* contact) {};
-	virtual void onEndContact(b2Contact* contact) {};
-	virtual void onPreSolve(b2Contact* contact, const b2Manifold* oldManifold) {};
-	virtual void onPostSolve(b2Contact* contact, const b2ContactImpulse* impulse) {};
+namespace fe {
+	class Collider;
+	struct Contact;
 
-};
+	class PhysicNode :
+		public Node2D
+	{
+	public:
+		/*********** Constructor / Destructor */
+		PhysicNode(sf::Vector2f _origin = sf::Vector2f(0.f, 0.f));
+		virtual ~PhysicNode();
+
+		/*********** Contact event handlers */
+		virtual void onBeginContact(std::shared_ptr<Contact> _contact) {};
+
+		/*********** Collider */
+		void setCollider(std::shared_ptr<Collider> _collider);
+		std::shared_ptr<Collider> getCollider();
+
+	private:
+		/*********** Collider */
+		std::shared_ptr<Collider>	collider;
+
+	};
+}

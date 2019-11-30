@@ -2,36 +2,51 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
-class Scene;
+namespace fe {
 
-class Node2D: 
-	public sf::Transformable
-{
-public:
-	/*********** Constructor / Destructor */
-	Node2D(Scene* _scene, sf::Vector2f _origin = sf::Vector2f(0.f, 0.f));
-	Node2D(Node2D* _parent, sf::Vector2f _origin = sf::Vector2f(0.f, 0.f));
-	virtual ~Node2D();
+	class Scene;
 
-	/*********** Base */
-	virtual void onBaseEvent(sf::Event& _event);
-	virtual void onBaseUpdate(double _dt);
-	virtual void onBaseDraw(sf::RenderTarget& _target, sf::RenderStates _state = sf::RenderStates());
+	class Node2D :
+		public sf::Transformable,
+		public std::enable_shared_from_this<Node2D>
+	{
+	public:
+		/*********** Constructor / Destructor */
+		Node2D(sf::Vector2f _origin = sf::Vector2f(0.f, 0.f));
+		virtual ~Node2D();
 
-	/*********** To implement in game */
-	virtual void onEvent(sf::Event& _event);
-	virtual void onUpdate(double _dt);
-	virtual void onDraw(sf::RenderTarget& _target);
+		/*********** Base */
+		virtual void onBaseEvent(sf::Event& _event);
+		virtual void onBaseUpdate(double _dt);
+		virtual void onBaseDraw(sf::RenderTarget& _target, sf::RenderStates _state = sf::RenderStates());
 
-	/*********** Tree structure */
-	void setParent(Node2D* _parent);
+		/*********** To implement in game */
+		virtual void onEvent(sf::Event& _event);
+		virtual void onUpdate(double _dt);
+		virtual void onDraw(sf::RenderTarget& _target);
 
-	void addChild(Node2D* _child);
-	void removeChild(Node2D* _child);
+		/*********** Tree structure */
+		void setParent(std::shared_ptr<Node2D> _parent);
 
-private:
-	/*********** Tree structure */
-	Node2D*					parent;
-	std::vector<Node2D*>	children;
-};
+		void addChild(std::shared_ptr<Node2D> _child);
+		void removeChild(std::shared_ptr<Node2D> _child);
 
+		/*********** Settings */
+		void setDeleted();
+		bool isDeleted();
+
+		void setDisabled(bool _val);
+		bool isDisabled();
+
+	private:
+		/*********** Settings */
+		bool					deleted;
+		bool					disabled;
+
+		/*********** Tree structure */
+		std::weak_ptr<Node2D>					parent;
+		std::vector<std::shared_ptr<Node2D>>	children;
+		std::vector<std::shared_ptr<Node2D>>	reqChildren;
+	};
+
+}
