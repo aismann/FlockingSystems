@@ -1,13 +1,14 @@
 #include "Engine.h"
 
 #include <SFML/Graphics.hpp>
+#include <cstdlib>
+#include <ctime>
 
 #include "SceneManager.h"
 #include "InputManager.h"
 #include "PhysicsEngine.h"
 
 #include "Console.h"
-
 #include "MainScene.h"
 
 namespace fe {
@@ -20,6 +21,10 @@ namespace fe {
 
 	void Engine::start(int argc, char** argv)
 	{
+		// Randomize
+		srand(time(NULL));
+
+		// Main window
 		this->mainWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(800, 600), "AI Project 1");
 		const double DELTA = 1.0 / 120.0;
 

@@ -6,6 +6,8 @@
 #include "Obstacle.h"
 #include "Enemy.h"
 
+#include <cstdlib>
+
 MainScene::MainScene():
 	unit(nullptr)
 {
@@ -17,19 +19,29 @@ MainScene::~MainScene()
 
 void MainScene::onInit()
 {
+	auto window = fe::EngineInstance.getMainWindow();
+	auto worldCenter = window->mapPixelToCoords(sf::Vector2i(window->getSize())) / 2.f;
+
 	// Spawn player
 	unit = std::make_shared<PlayerUnit>(shared_from_this());
+	unit->setPosition(worldCenter);
 	this->addChild(unit);
 
 	// Spawn obstacles
-	this->addChild(std::make_shared<Obstacle>(sf::Vector2f(100.f, 100.f)));
-	this->addChild(std::make_shared<Obstacle>(sf::Vector2f(400.f, 100.f)));
-	this->addChild(std::make_shared<Obstacle>(sf::Vector2f(100.f, 400.f)));
-	this->addChild(std::make_shared<Obstacle>(sf::Vector2f(400.f, 400.f)));
+	this->addChild(std::make_shared<Obstacle>(worldCenter + sf::Vector2f(-150.f, -150.f)));
+	this->addChild(std::make_shared<Obstacle>(worldCenter + sf::Vector2f(150.f, -150.f)));
+	this->addChild(std::make_shared<Obstacle>(worldCenter + sf::Vector2f(-150.f, 150.f)));
+	this->addChild(std::make_shared<Obstacle>(worldCenter + sf::Vector2f(150.f, 150.f)));
 
 	// Spawn enemies
-	auto newEnemy = std::make_shared<Enemy>(sf::Vector2f(200.f, 200.f));
-	this->addChild(newEnemy);
+	const int ENEMIES_NUM = 100;
+	for (int i = 0; i < ENEMIES_NUM; ++i) {
+		int randX = rand() % window->getSize().x;
+		int randY = rand() % window->getSize().y;
+
+		auto newEnemy = std::make_shared<Enemy>(sf::Vector2f(randX, randY));
+		this->addChild(newEnemy);
+	}
 }
 
 void MainScene::onExit()

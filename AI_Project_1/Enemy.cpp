@@ -22,7 +22,7 @@ void Enemy::onInit()
 	// Unit arrow
 	auto shape = std::make_shared<sf::CircleShape>(SIZE, 10);
 	shape->setFillColor(sf::Color(50, 200, 0));
-	shape->setOrigin(sf::Vector2f(SIZE / 2.f, SIZE / 2.f));
+	shape->setOrigin(sf::Vector2f(SIZE, SIZE));
 
 	auto circle = std::make_shared<fe::Shape2D>();
 	circle->setShape(shape);
