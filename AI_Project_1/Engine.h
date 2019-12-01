@@ -23,6 +23,8 @@ namespace fe {
 		/*********** Subsystems */
 		std::shared_ptr<SceneManager> getSceneManager();
 		std::shared_ptr<InputManager> getInputManager();
+		std::shared_ptr<PhysicsEngine> getPhysicEngine();
+		
 		std::shared_ptr<sf::RenderWindow> getMainWindow();
 
 	private:

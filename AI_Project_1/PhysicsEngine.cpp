@@ -43,11 +43,12 @@ namespace fe {
 			auto collider = std::static_pointer_cast<ColliderCircle>(body->getCollider());
 
 			if (!collider) {
-				C_WARNING("Invalid collider type, skipped!");
+				C_WARNING("Invalid collider type or collider not set, skipped!");
 				continue;
 			}
 
-			auto toCollider = collider->getPosition() - _point;
+			auto colliderPos = collider->getGlobalTransform().transformPoint(sf::Vector2f());
+			auto toCollider =  colliderPos - _point;
 			auto lenSq = math::lengthSquare(math::perp(toCollider, _dir));
 			auto vectDir = math::dotProduct(toCollider, _dir);
 

@@ -10,7 +10,7 @@ namespace fe {
 	{
 	public:
 		/*********** Constructor / Destructor */
-		PhysicNode(sf::Vector2f _origin = sf::Vector2f(0.f, 0.f));
+		PhysicNode(sf::Vector2f _position = sf::Vector2f(0.f, 0.f));
 		virtual ~PhysicNode();
 
 		/*********** Contact event handlers */

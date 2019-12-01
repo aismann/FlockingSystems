@@ -10,5 +10,13 @@ class Obstacle
 {
 public:
 	/*********** Constructor / Destructor */
+			Obstacle(sf::Vector2f _position);
+	virtual ~Obstacle();
+
+	/*********** Base */
+	void onInit() override;
+
+private:
+	/*********** Components */
 
 };

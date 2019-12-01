@@ -32,7 +32,7 @@ namespace fe {
 		// Pop pending scenes
 		auto it = sceneList.end();
 		for (auto s : sceneToPop) {
-			s->exit();
+			s->onExit();
 
 			it = std::remove(sceneList.begin(), sceneList.end(), s);
 		}
@@ -41,7 +41,7 @@ namespace fe {
 
 		// Push pending scene
 		for (auto s : sceneToPush) {
-			s->init();
+			s->onInit();
 
 			sceneList.push_back(s);
 		}
@@ -92,7 +92,7 @@ namespace fe {
 			return;
 		}
 
-		_scene->init();
+		_scene->onInit();
 		sceneList.push_back(_scene);
 	}
 

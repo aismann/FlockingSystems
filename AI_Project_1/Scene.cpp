@@ -13,17 +13,17 @@ namespace fe {
 	{
 	}
 
-	void Scene::init()
+	void Scene::onInit()
 	{
 	}
 
-	void Scene::exit()
+	void Scene::onExit()
 	{
 	}
 
 	void Scene::baseOnEvent(sf::Event& _event)
 	{
-		this->onEvent(_event);
+		onEvent(_event);
 
 		for (auto& child : children) {
 			if (child->isDisabled()) {
@@ -36,24 +36,34 @@ namespace fe {
 
 	void Scene::baseOnUpdate(double _dt)
 	{
-		this->onUpdate(_dt);
-
-		// Delete flagged childs
-		auto pastEndIt = std::remove_if(children.begin(), children.end(), [](auto node) {return node->isDeleted(); });
-		children.erase(pastEndIt, children.end());
+		onUpdate(_dt);
 
 		// Update all childs
-		for (auto child : children) {
+		for (int i = 0; i < children.size(); /* conditional */) {
+			auto child = children[i];
+
 			if (child->isDisabled()) {
 				continue;
 			}
 
 			child->onBaseUpdate(_dt);
+
+			if (child->isDeleted()) {
+				int lastIt = children.size() - 1;
+				std::swap(children[i], children[lastIt]);
+
+				child->onExit();
+				children.pop_back();
+			}
+			else {
+				i++;
+			}
 		}
 
 		// Add requested childs
 		for (auto ch : reqChildren) {
-			//s->init();
+			ch->onInit();
+			//ch->setParent(shared_from_this());
 			children.push_back(ch);
 		}
 		reqChildren.clear();

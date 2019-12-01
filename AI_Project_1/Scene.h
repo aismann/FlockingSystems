@@ -15,8 +15,8 @@ namespace fe {
 		virtual ~Scene();
 
 		/*********** Base */
-		virtual void init();
-		virtual void exit();
+		virtual void onInit();
+		virtual void onExit();
 
 		virtual void baseOnEvent(sf::Event& _event) final;
 		virtual void baseOnUpdate(double _dt) final;

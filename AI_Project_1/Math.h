@@ -29,6 +29,17 @@ namespace fe {
 			return std::pow(_value, _pow);
 		}
 
+		/*********** Trigonometry */
+		template<typename T>
+		T sin(T _radians) {
+			return std::sin(_radians);
+		}
+
+		template<typename T>
+		T cos(T _radians) {
+			return std::cos(_radians);
+		}
+
 		template<typename T>
 		T atan2(T _y, T _x) { // return in radians
 			return std::atan2(_y, _x);

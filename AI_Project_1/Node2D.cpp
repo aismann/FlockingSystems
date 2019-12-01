@@ -3,11 +3,11 @@
 
 namespace fe {
 
-	Node2D::Node2D(sf::Vector2f _origin) :
+	Node2D::Node2D(sf::Vector2f _position) :
 		deleted(false),
 		disabled(false)
 	{
-		setOrigin(_origin);
+		this->setPosition(_position);
 	}
 
 	Node2D::~Node2D()
@@ -31,22 +31,32 @@ namespace fe {
 	{
 		onUpdate(_dt);
 
-		// Delete flagged childs
-		auto pastEndIt = std::remove_if(children.begin(), children.end(), [](auto node) {return node->isDeleted(); });
-		children.erase(pastEndIt, children.end());
-
 		// Update all childs
-		for (auto child : children) {
+		for (int i = 0; i < children.size(); /* conditional */) {
+			auto child = children[i];
+
 			if (child->isDisabled()) {
 				continue;
 			}
-
+			
 			child->onBaseUpdate(_dt);
+
+			if (child->isDeleted()) {
+				int lastIt = children.size() - 1;
+				std::swap(children[i], children[lastIt]);
+
+				child->onExit();
+				children.pop_back();
+			}
+			else {
+				i++;
+			}
 		}
 
 		// Add requested childs
 		for (auto ch : reqChildren) {
-			//s->init();
+			ch->onInit();
+			ch->parent = shared_from_this();
 			children.push_back(ch);
 		}
 		reqChildren.clear();
@@ -67,6 +77,16 @@ namespace fe {
 		onDraw(_target);
 	}
 
+	void Node2D::onInit()
+	{
+		// TO BE IMPLEMENTED IN DERIVED SCENE
+	}
+
+	void Node2D::onExit()
+	{
+		// TO BE IMPLEMENTED IN DERIVED SCENE
+	}
+
 	void Node2D::onEvent(sf::Event& _event)
 	{
 		// TO BE IMPLEMENTED IN DERIVED SCENE
@@ -82,17 +102,13 @@ namespace fe {
 		// TO BE IMPLEMENTED IN DERIVED SCENE
 	}
 
-	void Node2D::setParent(std::shared_ptr<Node2D> _parent)
+	sf::Transform Node2D::getGlobalTransform()
 	{
-		// Delete previous parent
 		if (auto ptr = this->parent.lock()) {
-			ptr->removeChild(shared_from_this());
+			return ptr->getTransform() * this->getTransform();
 		}
-
-		// Attach new parent
-		this->parent = _parent;
-		if (_parent) {
-			_parent->addChild(shared_from_this());
+		else {
+			return this->getTransform();
 		}
 	}
 
@@ -104,11 +120,6 @@ namespace fe {
 		}
 
 		this->reqChildren.push_back(_child);
-	}
-
-	void Node2D::removeChild(std::shared_ptr<Node2D> _child)
-	{
-		children.erase(std::remove(children.begin(), children.end(), _child), children.end());
 	}
 
 	void Node2D::setDeleted()

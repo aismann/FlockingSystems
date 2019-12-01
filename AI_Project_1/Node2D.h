@@ -21,15 +21,18 @@ namespace fe {
 		virtual void onBaseDraw(sf::RenderTarget& _target, sf::RenderStates _state = sf::RenderStates());
 
 		/*********** To implement in game */
+		virtual void onInit();
+		virtual void onExit();
+
 		virtual void onEvent(sf::Event& _event);
 		virtual void onUpdate(double _dt);
 		virtual void onDraw(sf::RenderTarget& _target);
 
-		/*********** Tree structure */
-		void setParent(std::shared_ptr<Node2D> _parent);
+		/*********** Transform */
+		sf::Transform getGlobalTransform();
 
+		/*********** Tree structure */
 		void addChild(std::shared_ptr<Node2D> _child);
-		void removeChild(std::shared_ptr<Node2D> _child);
 
 		/*********** Settings */
 		void setDeleted();

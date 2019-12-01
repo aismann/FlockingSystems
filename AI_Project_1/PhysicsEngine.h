@@ -1,4 +1,6 @@
 #pragma once
+#include <SFML/System.hpp>
+
 #include <memory>
 #include <vector>
 
@@ -31,7 +33,7 @@ namespace fe {
 
 		// Delete tagged bodies 
 		const float deleteInterval = 5.f;
-		float deleteTimer = deleteDelta;
+		float deleteTimer = deleteInterval;
 	};
 };
 

@@ -1,7 +1,7 @@
 #pragma once
-#include <memory>
+#include "Node2D.h"
 
-#include <SFML/Graphics/Transformable.hpp>
+#include <memory>
 
 namespace fe {
 	class Node2D;
@@ -14,12 +14,15 @@ namespace fe {
 		Collider();
 		virtual ~Collider();
 
-		/*********** Parent node */
-		std::weak_ptr<Node2D> getParentNode();
+		/*********** Transform */
+		sf::Transform getGlobalTransform();
+
+		/*********** Game object */
+		void setGameObject(std::shared_ptr<Node2D> _gameObject);
 
 	private:
-		/*********** Parent node */
-		std::weak_ptr<Node2D> parentNode;
+		/*********** Game object */
+		std::weak_ptr<Node2D> gameObject;
 	};
 
 }

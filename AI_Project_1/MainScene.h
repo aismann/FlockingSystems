@@ -11,8 +11,8 @@ public:
 	virtual ~MainScene();
 
 	/*********** Base */
-	void init() override;
-	void exit() override;
+	void onInit() override;
+	void onExit() override;
 
 	void onEvent(sf::Event& _event) override;
 	void onUpdate(double _dt) override;

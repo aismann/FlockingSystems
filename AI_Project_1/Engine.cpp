@@ -76,6 +76,11 @@ namespace fe {
 		return this->inputManager;
 	}
 
+	std::shared_ptr<PhysicsEngine> Engine::getPhysicEngine()
+	{
+		return this->physicsEngine;
+	}
+
 	std::shared_ptr<sf::RenderWindow> Engine::getMainWindow()
 	{
 		return this->mainWindow;
