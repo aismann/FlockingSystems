@@ -15,12 +15,24 @@
 #include <memory>
 
 PlayerUnit::PlayerUnit(std::shared_ptr<fe::Scene> _scene, sf::Vector2f _origin) :
-	Node2D(_origin),
+	PhysicNode(_origin),
 	hp(100)
 {
+	// Get visible world size
+	auto window = fe::EngineInstance.getMainWindow();
+	worldSizeEnd = window->getSize();
+
 	// Hook main window
 	this->mainWindowPtr = fe::EngineInstance.getMainWindow();
 	this->mainScenePtr = _scene;
+	
+	// Unit heading ray
+	auto rect = std::make_shared<sf::RectangleShape>(sf::Vector2f(30.f, 2.f));
+	rect->setFillColor(sf::Color(255, 0, 0));
+
+	auto heading = std::make_shared<fe::Shape2D>();
+	heading->setShape(rect);
+	this->addChild(heading);
 
 	// Unit arrow
 	auto shape = std::make_shared<sf::CircleShape>(10.f, 3);
@@ -78,8 +90,24 @@ void PlayerUnit::onUpdate(double _dt)
 	sf::Vector2f toMouse = this->lastMousePoint - this->getPosition();
 	float rotRadian = fe::math::atan2(toMouse.y, toMouse.x);
 	this->setRotation(fe::math::radToDeg(rotRadian) + 90.0);
+
+	// Wrap
+	this->wrapScreen();
 }
 
-void PlayerUnit::onDraw(sf::RenderTarget& _target)
+void PlayerUnit::onDraw(sf::RenderTarget& _target, sf::RenderStates _state)
 {
 }
+
+void PlayerUnit::wrapScreen()
+{
+	auto pos = this->getPosition();
+
+	if (pos.x < 0.f) { pos.x += worldSizeEnd.x; }
+	if (pos.x > worldSizeEnd.x) { pos.x -= worldSizeEnd.x; }
+	if (pos.y < 0.f) { pos.y += worldSizeEnd.y; }
+	if (pos.y > worldSizeEnd.y) { pos.y -= worldSizeEnd.y; }
+
+	this->setPosition(pos);
+}
+

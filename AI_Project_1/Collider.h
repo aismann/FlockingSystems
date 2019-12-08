@@ -18,11 +18,11 @@ namespace fe {
 		sf::Transform getGlobalTransform();
 
 		/*********** Game object */
-		void setGameObject(std::shared_ptr<Node2D> _gameObject);
+		void setGameObject(std::shared_ptr<Node> _gameObject);
 
 	private:
 		/*********** Game object */
-		std::weak_ptr<Node2D> gameObject;
+		std::weak_ptr<Node> gameObject;
 	};
 
 }

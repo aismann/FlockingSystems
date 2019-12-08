@@ -138,6 +138,21 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Source Files\Game\Units</Filter>
     </ClCompile>
+    <ClCompile Include="EnemyController.cpp">
+      <Filter>Source Files\Game\Units\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Node.cpp">
+      <Filter>Source Files\Engine\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="Math.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Line.cpp">
+      <Filter>Source Files\Game\Units</Filter>
+    </ClCompile>
+    <ClCompile Include="BoundingRect.cpp">
+      <Filter>Source Files\Game\Units</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Console.h">
@@ -192,6 +207,18 @@
       <Filter>Header Files\Game\Units</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
+      <Filter>Header Files\Game\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyController.h">
+      <Filter>Header Files\Game\Units\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Header Files\Engine\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>Header Files\Game\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingRect.h">
       <Filter>Header Files\Game\Units</Filter>
     </ClInclude>
   </ItemGroup>

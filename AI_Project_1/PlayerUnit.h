@@ -1,5 +1,5 @@
 #pragma once
-#include "Node2D.h"
+#include "PhysicNode.h"
 
 namespace fe {
 	class Shape2D;
@@ -7,7 +7,7 @@ namespace fe {
 }
 
 class PlayerUnit:
-	public fe::Node2D
+	public fe::PhysicNode
 {
 public:
 	/*********** Constructor / Destructor */
@@ -15,9 +15,13 @@ public:
 	virtual ~PlayerUnit();
 
 	/*********** To implement in game */
-	virtual void onEvent(sf::Event& _event);
-	virtual void onUpdate(double _dt);
-	virtual void onDraw(sf::RenderTarget& _target);
+	void onEvent(sf::Event& _event) override;
+	void onUpdate(double _dt) override;
+	void onDraw(sf::RenderTarget& _target, sf::RenderStates _state = sf::RenderStates()) override;
+
+private:
+	/*********** Movement */
+	void wrapScreen();
 
 private:
 	/*********** Components */
@@ -29,6 +33,7 @@ private:
 
 	/*********** Movement */
 	sf::Vector2f lastMousePoint;
+	sf::Vector2u worldSizeEnd;
 
 	/*********** Settings */
 	int		hp;

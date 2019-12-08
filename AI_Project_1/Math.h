@@ -6,9 +6,18 @@
 namespace fe {
 	namespace math {
 		/*********** Consts */
-		const double PI = 3.14159265359f;
+		const float PI = 3.14159265359f;
 
 		/*********** Math */
+		template<typename T>
+		T abs(T _val) {
+			return std::abs(_val);
+		}
+		
+		template <typename T> int sign(T val) {
+			return (T(0) < val) - (val < T(0));
+		}
+
 		template<typename T>
 		T max(T _val1, T _val2) {
 			return (_val1 > _val2 ? _val1 : _val2);
@@ -28,6 +37,8 @@ namespace fe {
 		T pow(T _value, int _pow) {
 			return std::pow(_value, _pow);
 		}
+
+		float randomClamped(); // returns random float within [-1.0, 1.0]
 
 		/*********** Trigonometry */
 		template<typename T>
@@ -57,8 +68,8 @@ namespace fe {
 
 		/*********** Vector2 */
 		template <typename T>
-		sf::Vector2<T> perp2D(sf::Vector2<T> _vect1) { // left hand rule
-			return sf::Vector2<T>(_vect1.y,  -(_vect1.x));
+		sf::Vector2<T> perp2D(sf::Vector2<T> _vect1) { 
+			return sf::Vector2<T>(-(_vect1.y),  _vect1.x);
 		}
 		
 		template <typename T>
@@ -89,6 +100,16 @@ namespace fe {
 		template <typename T>
 		sf::Vector2<T> normalize(sf::Vector2<T> _vect1) {
 			return (_vect1 / length(_vect1));
+		}
+
+		template <typename T> 
+		sf::Vector2<T> truncate(sf::Vector2<T> _vect, T _length) { // truncate vector to given length
+			if (pow(_length, 2) < lengthSquare(_vect)) {
+				return (normalize(_vect) * _length);
+			}
+			else {
+				return _vect;
+			}
 		}
 	}
 }

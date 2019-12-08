@@ -160,14 +160,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BoundingRect.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="ColliderCircle.cpp" />
     <ClCompile Include="CollisionResolver.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Line.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainScene.cpp" />
+    <ClCompile Include="Math.cpp" />
+    <ClCompile Include="Node.cpp" />
     <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="PhysicNode.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
@@ -179,15 +184,19 @@
     <ClCompile Include="Shape2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BoundingRect.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="ColliderCircle.h" />
     <ClInclude Include="CollisionResolver.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyController.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Line.h" />
     <ClInclude Include="MainScene.h" />
     <ClInclude Include="Math.h" />
+    <ClInclude Include="Node.h" />
     <ClInclude Include="Obstacle.h" />
     <ClInclude Include="PhysicNode.h" />
     <ClInclude Include="PhysicsEngine.h" />

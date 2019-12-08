@@ -86,10 +86,20 @@ namespace ConsoleLogger {
 
 	public:
 		// Prepare string
-		template <typename T>
-		std::string prepare_string(T t) {
+		void prepare_helper(std::ostringstream& stream) {};
+
+		template <typename T, typename... Args>
+		void prepare_helper(std::ostringstream& stream, T t, Args... args) {
+			stream << t << " ";
+			prepare_helper(stream, std::forward<Args>(args)...);
+		}
+
+		template <typename... Args>
+		std::string prepare_string(Args... t) {
 			std::ostringstream tmpStr;
-			tmpStr << "[" << name << "]" << t << std::endl;
+			tmpStr << "[" << name << "]";
+			prepare_helper(tmpStr, t...);
+			tmpStr << std::endl;
 
 			return tmpStr.str();
 		}

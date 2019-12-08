@@ -17,6 +17,10 @@ namespace fe {
 
 	void InputManager::takeEvent(sf::Event& _event)
 	{
+		if (_event.key.code < 0 || _event.key.code > (KeyCode::KeyCount - 1)) {
+			return;
+		}
+
 		if (_event.type == sf::Event::KeyPressed) {
 			this->keyPressedMap[_event.key.code] = true;
 		}

@@ -13,14 +13,14 @@ namespace fe {
 	sf::Transform Collider::getGlobalTransform()
 	{
 		if (auto ptr = this->gameObject.lock()) {
-			return ptr->getTransform() * this->getTransform();
+			return ptr->getGlobalTransform() * this->getTransform();
 		}
 		else {
 			return this->getTransform();
 		}
 	}
 
-	void Collider::setGameObject(std::shared_ptr<Node2D> _gameObject)
+	void Collider::setGameObject(std::shared_ptr<Node> _gameObject)
 	{
 		this->gameObject = _gameObject;
 	}

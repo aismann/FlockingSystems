@@ -1,8 +1,8 @@
 #pragma once
-#include "Node2D.h"
+#include "Line.h"
 
 class Ray :
-	public fe::Node2D
+	public Line
 {
 public:
 	/*********** Constructor / Destructor */
@@ -11,14 +11,8 @@ public:
 
 	/*********** To implement in game */
 	void onUpdate(double _dt) override;
-	void onDraw(sf::RenderTarget& _target) override;
 
 private:
-	/*********** Components */
-	sf::Vertex vertices[4];
-
-	void updateColor();
-
 	/*********** Settings */
 	float	startTimer = 1.0f;
 	float	currTimer = startTimer;

@@ -13,10 +13,13 @@ public:
 			Obstacle(sf::Vector2f _position);
 	virtual ~Obstacle();
 
+	/*********** Utils */
+	float getRadius(); // get radius of collider
+
 	/*********** Base */
 	void onInit() override;
 
 private:
-	/*********** Components */
-
+	/*********** Settings */
+	float		radius;
 };
