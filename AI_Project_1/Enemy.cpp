@@ -24,7 +24,8 @@ Enemy::~Enemy()
 
 void Enemy::onInit()
 {
-	this->setMaxSpeed(30.f);
+	this->setMaxSpeed(150.f);
+	this->setMaxForce(400.f);
 
 	/*** Get visible world size ***/
 	auto window = fe::EngineInstance.getMainWindow();
@@ -47,9 +48,13 @@ void Enemy::onInit()
 	this->addChild(this->controller);
 
 	//this->controller->addBehaviourMode(EnemyController::HIDE);
-	this->controller->addBehaviourMode(EnemyController::WANDER);
-	this->controller->addBehaviourMode(EnemyController::OBSTACLE_AVOIDANCE);
 	//this->controller->addBehaviourMode(EnemyController::PURSUIT);
+	//this->controller->addBehaviourMode(EnemyController::WANDER);
+	//this->controller->addBehaviourMode(EnemyController::OBSTACLE_AVOIDANCE);
+
+	this->controller->addBehaviourMode(EnemyController::COHESION);
+	this->controller->addBehaviourMode(EnemyController::ALLIGNMENT);
+	this->controller->addBehaviourMode(EnemyController::SEPARATION);
 
 	/*** DEBUG VECTORS **/
 	debugVectorVelocity = std::make_shared<Line>(sf::Vector2f(), sf::Vector2f(), 1.f, sf::Color(0, 200, 0));
@@ -57,23 +62,32 @@ void Enemy::onInit()
 	debugVectorSide = std::make_shared<Line>(sf::Vector2f(), sf::Vector2f(), 1.f, sf::Color(200, 100, 0));
 	debugVectorAvoid = std::make_shared<Line>(sf::Vector2f(), sf::Vector2f(), 1.f, sf::Color(0, 255, 255));
 	debugVectorWander = std::make_shared<Line>(sf::Vector2f(), sf::Vector2f(), 1.f, sf::Color(255, 255, 0));
-	this->addChild(debugVectorVelocity);
+	debugVectorHide = std::make_shared<Line>(sf::Vector2f(), sf::Vector2f(), 1.f, sf::Color(255, 255, 255));
+	//this->addChild(debugVectorVelocity);
 	this->addChild(debugVectorHeading);
-	this->addChild(debugVectorSide);
-	this->addChild(debugVectorAvoid);
-	this->addChild(debugVectorWander);
+	//this->addChild(debugVectorSide);
+	//this->addChild(debugVectorAvoid);
+	//this->addChild(debugVectorWander);
+	//this->addChild(debugVectorHide);
+
+	debugVectorCohesion = std::make_shared<Line>(sf::Vector2f(), sf::Vector2f(), 1.f, sf::Color(200, 0, 0));
+	debugVectorSeparation = std::make_shared<Line>(sf::Vector2f(), sf::Vector2f(), 1.f, sf::Color(0, 200, 0));
+	debugVectorAlignment = std::make_shared<Line>(sf::Vector2f(), sf::Vector2f(), 1.f, sf::Color(0, 0, 200));
+	this->addChild(debugVectorCohesion);
+	this->addChild(debugVectorSeparation);
+	this->addChild(debugVectorAlignment);
 
 	debugBoundingRect = std::make_shared<BoundingRect>(sf::Vector2f(), sf::Vector2f(), radius, sf::Color(255, 0, 0));
-	this->addChild(debugBoundingRect);
+	//this->addChild(debugBoundingRect);
 }
 
 void Enemy::onUpdate(double _dt)
 {	
 	auto acc = this->controller->getSteeringForce() / this->getMass();
 	this->velocity += acc * (float)_dt;
-	this->velocity = fe::math::truncate(this->velocity, this->maxSpeed);
-
+	
 	if (fe::math::lengthSquare(this->velocity) > 0.00000001){
+		this->velocity = fe::math::truncate(this->velocity, this->maxSpeed);
 		this->setHeading(this->velocity);
 	}
 

@@ -28,13 +28,18 @@ void EnemyController::updateSteeringForce()
 	this->steeringForce = sf::Vector2f();
 	sf::Vector2f vector;
 
+	// Get data
+	auto scene = this->unit->getMainScene().lock();
+	if (!scene) { throw std::exception("Cannot get main scene pointer."); }
+	auto enemies = scene->getEnemies();
+	auto obstacles = scene->getObstacles();
+	auto playerUnit = scene->getPlayerUnit().lock();
+	if (!playerUnit) { throw std::exception("Cannot get player unit pointer."); }
+
+
 	if (isBehaviourMode(Behaviour::OBSTACLE_AVOIDANCE)) {
-		auto ptr = this->unit->getMainScene().lock();
-		if (ptr) {
-			auto obstacles = ptr->getObstacles();
-			vector = this->avoidObstacles(obstacles);
-			unit->debugVectorAvoid->setPoints(sf::Vector2f(), vector);
-		}
+		vector = this->avoidObstacles(obstacles);
+		unit->debugVectorAvoid->setPoints(sf::Vector2f(), vector);
 
 		if (addForce(steeringForce, vector)) {
 			return;
@@ -51,13 +56,9 @@ void EnemyController::updateSteeringForce()
 	}
 
 	if (isBehaviourMode(Behaviour::HIDE)) {
-		auto ptr = this->unit->getMainScene().lock();
-		if (ptr) {
-			auto obstacles = ptr->getObstacles();
-			auto playerUnitPos = ptr->getPlayerUnit().lock()->getPosition();
-
-			vector = this->hide(playerUnitPos, obstacles);
-		};
+		auto playerUnitPos = playerUnit->getPosition();
+		vector = this->hide(playerUnitPos, obstacles);
+		unit->debugVectorHide->setPoints(sf::Vector2f(), vector);
 
 		if (addForce(steeringForce, vector)) {
 			return;
@@ -65,11 +66,7 @@ void EnemyController::updateSteeringForce()
 	}
 
 	if (isBehaviourMode(Behaviour::PURSUIT)) {
-		auto ptr = this->unit->getMainScene().lock();
-		if (ptr) {
-			auto playerUnit = ptr->getPlayerUnit().lock();
-			vector = this->pursuit(playerUnit);
-		}
+		vector = this->pursuit(playerUnit);
 
 		if (addForce(steeringForce, vector)) {
 			return;
@@ -77,7 +74,40 @@ void EnemyController::updateSteeringForce()
 	}
 
 	// Flocking
+	scene->tagEnemiesInRange(this->unit, this->viewDistance);
 
+	auto vector1 = this->separation(enemies) * this->weightSeparation;
+	auto vector2 = this->alignment(enemies) * this->weightAlignment;
+	auto vector3 = this->cohesion(enemies) * this->weightCohesion;
+	addForce(steeringForce, vector1 + vector2 + vector3);
+
+	unit->debugVectorSeparation->setPoints(sf::Vector2f(), vector1 * 10.f);
+	unit->debugVectorAlignment->setPoints(sf::Vector2f(), vector2 * 10.f);
+	unit->debugVectorCohesion->setPoints(sf::Vector2f(), vector3 * 10.f);
+
+	//if (isBehaviourMode(Behaviour::SEPARATION)) {
+	//	vector = this->separation(enemies) * this->weightSeparation;
+
+	//	if (addForce(steeringForce, vector)) {
+	//		return;
+	//	}
+	//}
+
+	//if (isBehaviourMode(Behaviour::ALLIGNMENT)) {
+	//	vector = this->alignment(enemies) * this->weightAlignment;
+
+	//	if (addForce(steeringForce, vector)) {
+	//		return;
+	//	}
+	//}
+
+	//if (isBehaviourMode(Behaviour::COHESION)) {
+	//	vector = this->cohesion(enemies) * this->weightCohesion;
+
+	//	if (addForce(steeringForce, vector)) {
+	//		return;
+	//	}
+	//}
 }
 
 bool EnemyController::addForce(sf::Vector2f& _currForce, sf::Vector2f _addForce)
@@ -91,16 +121,21 @@ bool EnemyController::addForce(sf::Vector2f& _currForce, sf::Vector2f _addForce)
 	float magnitudeToAdd = fe::math::length(_addForce);
 	if (magnitudeToAdd < magnitudeToUse) {
 		_currForce += _addForce;
+		return false; // force is not full
 	}
 	else {
 		_currForce += fe::math::normalize(_addForce) * magnitudeToUse;
+		return true; // force is full
 	}
-
-	return false; // force is not full
 }
 
 sf::Vector2f EnemyController::seek(sf::Vector2f _targetPos)
 {
+	auto len = fe::math::lengthSquare(_targetPos - unit->getPosition());
+	if (len < 0.0001) {
+		return sf::Vector2f();
+	}
+
 	sf::Vector2f desiredVelocity = fe::math::normalize(_targetPos - unit->getPosition()) * unit->getMaxSpeed();
 	return (desiredVelocity - unit->getVelocity());
 }
@@ -247,7 +282,7 @@ sf::Vector2f EnemyController::avoidObstacles(std::vector<std::weak_ptr<Obstacle>
 	// Calculate steering force
 	float multiplier = 1.f + (boudingBoxLength - closestObstacleLocal.x) / boudingBoxLength;
 	//auto lateral = (2.0f - (fe::math::abs(closestObstacleLocal.y) / closestObstacle->getRadius())) * (-fe::math::sign(closestObstacleLocal.y)) * closestObstacle->getRadius() * multiplier;
-	//auto lateral = (closestObstacle->getRadius() - closestObstacleLocal.y) * multiplier;
+	//auto lateral = (closestObstacle->getRadius() - closestObstacleLocal.y) * multiplier; // from book
 	auto lateral = -(fe::math::pow(closestObstacle->getRadius(),2)/closestObstacleLocal.y) * multiplier;
 	auto steeringForce = sf::Vector2f(0.f, lateral);
 
@@ -260,6 +295,7 @@ sf::Vector2f EnemyController::avoidObstacles(std::vector<std::weak_ptr<Obstacle>
 sf::Vector2f EnemyController::separation(std::vector<std::weak_ptr<Enemy>>& _enemies)
 {
 	sf::Vector2f tmpSteeringForce;
+	int count = 0;
 
 	for (auto unitWeakPtr : _enemies) {
 		auto unitPtr = unitWeakPtr.lock();
@@ -267,17 +303,31 @@ sf::Vector2f EnemyController::separation(std::vector<std::weak_ptr<Enemy>>& _ene
 			continue;
 		}
 
-		sf::Vector2f toNode = unit->getPosition() - unitPtr->getPosition();
-		tmpSteeringForce += fe::math::normalize(toNode) / fe::math::length(toNode);
+		auto toAgent = (unit->getPosition() - unitPtr->getPosition());
+		auto len = fe::math::length(toAgent);
+
+		if (len < 25.f) {
+			tmpSteeringForce += fe::math::normalize(toAgent) / len;
+			count++;
+		}
 	}
 
-	return tmpSteeringForce;
+	if (count > 0) {
+		tmpSteeringForce /= (float)count;
+		tmpSteeringForce = fe::math::normalize(tmpSteeringForce);
+		//tmpSteeringForce *= unit->getMaxSpeed();
+		//tmpSteeringForce -= unit->getVelocity();
+		return tmpSteeringForce;
+	}
+	else {
+		return sf::Vector2f();
+	}
 }
 
 sf::Vector2f EnemyController::alignment(std::vector<std::weak_ptr<Enemy>>& _enemies)
 {
-	sf::Vector2f	averageHeading;
-	int				neighborCount = 0;
+	sf::Vector2f averageHeading;
+	int count = 0;
 
 	for (auto unitWeakPtr : _enemies) {
 		auto unitPtr = unitWeakPtr.lock();
@@ -286,21 +336,22 @@ sf::Vector2f EnemyController::alignment(std::vector<std::weak_ptr<Enemy>>& _enem
 		}
 
 		averageHeading += unitPtr->getHeading();
-		neighborCount++;
+		count++;
 	}
 
-	if (neighborCount > 0) {
-		averageHeading /= (float)neighborCount;
-		averageHeading -= unit->getHeading();
+	if (count > 0) {
+		averageHeading /= (float)count;
+		return averageHeading;
 	}
-
-	return averageHeading;
+	else {
+		return sf::Vector2f();
+	}
 }
 
 sf::Vector2f EnemyController::cohesion(std::vector<std::weak_ptr<Enemy>>& _enemies)
 {
-	sf::Vector2f centerOfMass, tmpSteeringForce;
-	int neighborCount = 0;
+	sf::Vector2f tmpSteeringForce;
+	int count = 0;
 
 	for (auto unitWeakPtr : _enemies) {
 		auto unitPtr = unitWeakPtr.lock();
@@ -308,14 +359,17 @@ sf::Vector2f EnemyController::cohesion(std::vector<std::weak_ptr<Enemy>>& _enemi
 			continue;
 		}
 
-		centerOfMass += unitPtr->getPosition();
-		neighborCount++;
+		tmpSteeringForce += unitPtr->getPosition();
+		count++;
 	}
-
-	if (neighborCount > 0) {
-		centerOfMass /= (float)neighborCount;
-		tmpSteeringForce = seek(centerOfMass);
+	
+	if (count > 0) {
+		tmpSteeringForce /= (float)count;
+		tmpSteeringForce = tmpSteeringForce - unit->getPosition();
+		tmpSteeringForce = fe::math::normalize(tmpSteeringForce);
+		return tmpSteeringForce;
 	}
-
-	return tmpSteeringForce;
+	else {
+		return sf::Vector2f();
+	}
 }

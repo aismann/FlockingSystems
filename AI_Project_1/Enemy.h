@@ -57,4 +57,9 @@ protected:
 	std::shared_ptr<Line>			debugVectorSide;
 	std::shared_ptr<Line>			debugVectorAvoid;
 	std::shared_ptr<Line>			debugVectorWander;
+	std::shared_ptr<Line>			debugVectorHide;
+
+	std::shared_ptr<Line>			debugVectorCohesion;
+	std::shared_ptr<Line>			debugVectorSeparation;
+	std::shared_ptr<Line>			debugVectorAlignment;
 };

@@ -26,7 +26,7 @@ public:
 	std::vector<std::weak_ptr<Enemy>>&		getEnemies();
 	std::weak_ptr<PlayerUnit>				getPlayerUnit();
 
-	void									tagEnemiesInRange(sf::Vector2f _start, float _range);
+	void									tagEnemiesInRange(Enemy* _unit, float _range);
 
 private:
 	/*********** Units */

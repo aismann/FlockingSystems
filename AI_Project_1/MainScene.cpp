@@ -29,24 +29,24 @@ void MainScene::onInit()
 	this->addChild(unit);
 
 	// Spawn obstacles
-	auto obstaclePos = std::vector<sf::Vector2f>{
-		worldCenter + sf::Vector2f(-150.f, -150.f),
-		worldCenter + sf::Vector2f(150.f, -150.f),
-		worldCenter + sf::Vector2f(-150.f, 150.f),
-		worldCenter + sf::Vector2f(150.f, 150.f)
-	};
+	//auto obstaclePos = std::vector<sf::Vector2f>{
+	//	worldCenter + sf::Vector2f(-150.f, -150.f),
+	//	worldCenter + sf::Vector2f(150.f, -150.f),
+	//	worldCenter + sf::Vector2f(-150.f, 150.f),
+	//	worldCenter + sf::Vector2f(150.f, 150.f)
+	//};
 
-	for (auto pos : obstaclePos) {
-		auto newObstacle = std::make_shared<Obstacle>(pos);
-		this->addChild(newObstacle);
-		this->obstacles.push_back(newObstacle);
-	}
+	//for (auto pos : obstaclePos) {
+	//	auto newObstacle = std::make_shared<Obstacle>(pos);
+	//	this->addChild(newObstacle);
+	//	this->obstacles.push_back(newObstacle);
+	//}
 
 	//this->spawnEnemy(sf::Vector2f(30, 30));
 
 	//for (int i = 0; i < 8; ++i) {
 	//	for (int j = 0; j < 8; ++j) {
-	//		auto pos = sf::Vector2f(60.f + 100.f * i, 60.f + 100.f * j);
+	//		auto pos = sf::Vector2f(60.f + 80.f * i, 60.f + 80.f * j);
 	//		auto newObstacle = std::make_shared<Obstacle>(pos);
 	//		this->addChild(newObstacle);
 	//		this->obstacles.push_back(newObstacle);
@@ -54,7 +54,7 @@ void MainScene::onInit()
 	//}
 
 	// Spawn enemies
-	const int ENEMIES_NUM = 100;
+	const int ENEMIES_NUM = 30;
 	for (int i = 0; i < ENEMIES_NUM; ++i) {
 		int randX = (float)(rand() % window->getSize().x);
 		int randY = (float)(rand() % window->getSize().y);
@@ -110,8 +110,10 @@ std::weak_ptr<PlayerUnit> MainScene::getPlayerUnit()
 	return unit;
 }
 
-void MainScene::tagEnemiesInRange(sf::Vector2f _start, float _range)
+void MainScene::tagEnemiesInRange(Enemy* _unit, float _range)
 {
+	sf::Vector2f start = _unit->getPosition();
+
 	for (auto ptrWeakEnemy : this->enemies) {
 		auto ptrEnemy = ptrWeakEnemy.lock();
 
@@ -121,7 +123,11 @@ void MainScene::tagEnemiesInRange(sf::Vector2f _start, float _range)
 
 		ptrEnemy->setTag(false);
 
-		float distSq = fe::math::lengthSquare(_start - ptrEnemy->getPosition());
+		if (ptrEnemy.get() == _unit) {
+			continue;
+		}
+
+		float distSq = fe::math::lengthSquare(start - ptrEnemy->getPosition());
 		float radius = _range + ptrEnemy->getRadius();
 		if (distSq < radius * radius) {
 			ptrEnemy->setTag(true);

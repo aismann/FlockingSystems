@@ -79,6 +79,14 @@ private:
 	int				behaviourFlags;
 	sf::Vector2f	steeringForce;
 
+	// Weights
+	float forceTweaker = 200.f;
+
+	float weightSeparation	= 1.f;
+	float weightAlignment	= 1.f;
+	float weightCohesion	= 2.f;
+
+
 	// Wander settings
 	sf::Vector2f wanderTarget = sf::Vector2f();
 
@@ -90,6 +98,9 @@ private:
 	float boudingBoxLength	= 40.f;
 	float offsetRadius		= 10.f; // additional offset between Obstacle and Unit
 
+	// Flocking behaviour settings
+	float viewDistance		= 50.f;
+	
 	/*********** Controlled unit */
 	Enemy*			unit;
 };
