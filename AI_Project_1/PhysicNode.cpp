@@ -40,6 +40,26 @@ namespace fe {
 		return this->collider;
 	}
 
+	void PhysicNode::setDeleted()
+	{
+		Node2D::setDeleted();
+
+		// Remove from physic queuee
+		if (this->collider) {
+			fe::EngineInstance.getPhysicEngine()->removeBody(std::static_pointer_cast<PhysicNode>(shared_from_this()));
+		}
+	}
+
+	void PhysicNode::setLayerFlags(int _flags)
+	{
+		layerFlag = _flags;
+	}
+
+	bool PhysicNode::isFlag(int _flags)
+	{
+		return (bool)(layerFlag & _flags);
+	}
+
 	sf::Vector2f PhysicNode::pointToWorldSpace(sf::Vector2f _local)
 	{
 		sf::Vector2f result;

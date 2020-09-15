@@ -10,16 +10,28 @@ namespace fe {
 		public Node2D
 	{
 	public:
+		enum Layer {
+			RAY_CAST	= 1 << 0,
+			COLLISION	= 1 << 1,
+		};
+
+	public:
 		/*********** Constructor / Destructor */
 		PhysicNode(sf::Vector2f _position = sf::Vector2f(0.f, 0.f));
 		virtual ~PhysicNode();
 
 		/*********** Contact event handlers */
-		virtual void onBeginContact(std::shared_ptr<Contact> _contact) {};
+		virtual void onBeginContact(Contact& _contact) {};
 
 		/*********** Collider */
-		void setCollider(std::shared_ptr<Collider> _collider);
-		std::shared_ptr<Collider> getCollider();
+		void						setCollider(std::shared_ptr<Collider> _collider);
+		std::shared_ptr<Collider>	getCollider();
+
+		/*********** Settings */
+		void setDeleted() override;
+
+		void setLayerFlags(int _flags);
+		bool isFlag(int _flags);
 
 	public:
 		/*********** Tools */
@@ -30,25 +42,25 @@ namespace fe {
 		sf::Vector2f vectorToLocalSpace(sf::Vector2f _world);
 
 		/*********** Properties */
-		float getMass() { return this->mass; };
-		void setMass(float _mass) { this->mass = _mass; };
+		float	getMass() { return this->mass; };
+		void	setMass(float _mass) { this->mass = _mass; };
 
-		float getMaxSpeed() { return this->maxSpeed; };
-		void setMaxSpeed(float _speed) { this->maxSpeed = _speed; };
+		float	getMaxSpeed() { return this->maxSpeed; };
+		void	setMaxSpeed(float _speed) { this->maxSpeed = _speed; };
 
-		float getMaxForce() { return this->maxForce; };
-		void setMaxForce(float _force) { this->maxForce = _force; };
+		float	getMaxForce() { return this->maxForce; };
+		void	setMaxForce(float _force) { this->maxForce = _force; };
 
-		sf::Vector2f getVelocity() { return this->velocity; };
-		void setVelocity(sf::Vector2f _vect) { this->velocity = _vect; };
+		sf::Vector2f	getVelocity() { return this->velocity; };
+		void			setVelocity(sf::Vector2f _vect) { this->velocity = _vect; };
 
-		sf::Vector2f getHeading() { return this->heading; };
-		void setHeading(sf::Vector2f _vect);
+		sf::Vector2f	getHeading() { return this->heading; };
+		void			setHeading(sf::Vector2f _vect);
 
-		sf::Vector2f getSide() { return this->side; };
+		sf::Vector2f	getSide() { return this->side; };
 
-		float getSpeed() { return math::length(this->velocity);  };
-		float getSpeedSq() { return math::lengthSquare(this->velocity); };
+		float			getSpeed() { return math::length(this->velocity);  };
+		float			getSpeedSq() { return math::lengthSquare(this->velocity); };
 
 	protected:
 		/*********** Collider */
@@ -63,5 +75,6 @@ namespace fe {
 		float maxForce;	// kg * m / s*s
 		float mass;		// kg
 
+		int layerFlag = ~(0);
 	};
 }

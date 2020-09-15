@@ -19,7 +19,7 @@ namespace fe {
 	{
 		onEvent(_event);
 
-		for (auto child : children) {
+		for (auto& child : children) {
 			if (child->isDisabled()) {
 				continue;
 			}
@@ -34,7 +34,7 @@ namespace fe {
 
 		// Update all childs
 		for (int i = 0; i < children.size(); /* conditional */) {
-			auto child = children[i];
+			auto& child = children[i];
 
 			if (child->isDisabled()) {
 				continue;
@@ -55,7 +55,7 @@ namespace fe {
 		}
 
 		// Add requested childs
-		for (auto ch : reqChildren) {
+		for (auto& ch : reqChildren) {
 			ch->onInit();
 			ch->parent = shared_from_this();
 			children.push_back(ch);

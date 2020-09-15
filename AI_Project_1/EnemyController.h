@@ -33,6 +33,7 @@ public:
 		HIDE				= 1 << 13,
 		FLOCK				= 1 << 14,
 		OFFSET_PURSUIT		= 1 << 15,
+		FORCE_HIDE			= 1 << 16
 	};
 
 	/*********** Constructor / Destructor */
@@ -46,6 +47,8 @@ public:
 	void updateSteeringForce();
 	sf::Vector2f getSteeringForce() { return this->steeringForce; };
 
+	void		setAttackMode(bool _attacking);
+
 	/*********** AI Behaviors Flags */
 	void removeBehaviourMode(Behaviour _flag) { this->behaviourFlags &= (~_flag); };
 	void addBehaviourMode(Behaviour _flag) { this->behaviourFlags |= _flag;};
@@ -53,7 +56,7 @@ public:
 
 private:
 	/*********** AI Behaviors */
-	bool addForce(sf::Vector2f& _currForce, sf::Vector2f _addForce);
+	bool		addForce(sf::Vector2f& _currForce, sf::Vector2f _addForce);
 
 	/*********** AI Behaviors */
 	sf::Vector2f seek(sf::Vector2f _targetPos);
@@ -63,15 +66,16 @@ private:
 	sf::Vector2f evade(std::shared_ptr<PlayerUnit> _target);
 	sf::Vector2f pursuit(std::shared_ptr<PlayerUnit> _targetPos);
 
-	sf::Vector2f hide(sf::Vector2f _targetPos, std::vector<std::weak_ptr<Obstacle>>& _obstacles);
+	sf::Vector2f hide(sf::Vector2f _targetPos, std::vector<std::shared_ptr<Obstacle>>& _obstacles);
+	sf::Vector2f hide_forced(sf::Vector2f _targetPos);
 	sf::Vector2f wander();
 
-	sf::Vector2f avoidObstacles(std::vector<std::weak_ptr<Obstacle>>& _obstacles);
+	sf::Vector2f avoidObstacles(std::vector<std::shared_ptr<Obstacle>>& _obstacles);
 
 	// Flocking
-	sf::Vector2f separation(std::vector<std::weak_ptr<Enemy>>& _enemies);
-	sf::Vector2f alignment(std::vector<std::weak_ptr<Enemy>>& _enemies);
-	sf::Vector2f cohesion(std::vector<std::weak_ptr<Enemy>>& _enemies);
+	sf::Vector2f separation(std::vector<std::shared_ptr<Enemy>>& _enemies);
+	sf::Vector2f alignment(std::vector<std::shared_ptr<Enemy>>& _enemies);
+	sf::Vector2f cohesion(std::vector<std::shared_ptr<Enemy>>& _enemies);
 
 
 private:
@@ -80,12 +84,15 @@ private:
 	sf::Vector2f	steeringForce;
 
 	// Weights
-	float forceTweaker = 200.f;
-
-	float weightSeparation	= 1.f;
+	float weightSeparation	= 10.f;
 	float weightAlignment	= 1.f;
-	float weightCohesion	= 2.f;
+	float weightCohesion	= 5.f;
 
+	float weightAvoidance	= 8.f;
+	float weightPursuit		= 6.f;
+	float weightWander		= 1.f;
+	float weightHide		= 3.f;
+	float weightFlee		= 4.f;
 
 	// Wander settings
 	sf::Vector2f wanderTarget = sf::Vector2f();
@@ -96,11 +103,37 @@ private:
 
 	// Obstacle avoidance settings
 	float boudingBoxLength	= 40.f;
-	float offsetRadius		= 10.f; // additional offset between Obstacle and Unit
+	float offsetRadius		= 20.f; // additional offset between Obstacle and Unit while avoidance
 
 	// Flocking behaviour settings
 	float viewDistance		= 50.f;
 	
+	// Flee
+	float fleeDistance		= 100.f;
+
+	// Hide settings
+	float hideDistance		= 250.f;
+	float obstacleOffset	= 60.f; // offset between Obstacle and Unit while hiding
+
+	/*********** Others */
+	// Group and attack
+	bool attackMode			= false;
+	int groupCount			= 5;
+	float groupRadius		= 50.f;
+	float hitRadius			= 20.f;
+
+	const float GROUP_CHECK = 5.f; // check for grouping interval
+	float groupTimer		= GROUP_CHECK;
+
+	const float				HIT_CHECK = 1.f; // check if player hit interval
+	float					hitTimer = HIT_CHECK;
+
+	// Choose hiding spot and hide for some time, this allow grouping of enemies
+	bool isHiding			= false; // is unit hiding by choice
+	float untilHidingTimer	= 0.f;	// timer until unit decide to hide
+	float hidingTimer		= 0.f;	// hide for some time then return to normal state
+	std::shared_ptr<Obstacle> hidingSpot;
+
 	/*********** Controlled unit */
 	Enemy*			unit;
 };

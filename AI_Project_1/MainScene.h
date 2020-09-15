@@ -22,21 +22,33 @@ public:
 	void onDraw(sf::RenderTarget& _target) override;
 
 	/*********** AI */
-	std::vector<std::weak_ptr<Obstacle>>&	getObstacles();
-	std::vector<std::weak_ptr<Enemy>>&		getEnemies();
+	std::vector<std::shared_ptr<Obstacle>>&	getObstacles();
+	std::vector<std::shared_ptr<Enemy>>&	getEnemies();
 	std::weak_ptr<PlayerUnit>				getPlayerUnit();
 
-	void									tagEnemiesInRange(Enemy* _unit, float _range);
+	int										tagEnemiesInRange(Enemy* _unit, float _range);
+	bool									tryHitPlayer(Enemy* _unit, float _range);
 
 private:
 	/*********** Units */
 	void									spawnEnemy(sf::Vector2f _pos);
+	void									spawnEnemyRandom();
+
+	/*********** Obstacles */
+	void									spawnObstaclesFour();
+	void									spawnObstaclesNarrow();
+	void									spawnObstaclesRandom();
 
 private:
 	/*********** Units */
 	std::shared_ptr<PlayerUnit>				unit;
+	std::shared_ptr<sf::RenderWindow>		window;
 
-	std::vector<std::weak_ptr<Obstacle>>	obstacles;
-	std::vector<std::weak_ptr<Enemy>>		enemies;
+	std::vector<std::shared_ptr<Obstacle>>	obstacles;
+	std::vector<std::shared_ptr<Enemy>>		enemies;
+
+	/*********** Settings */
+	const float SPAWN_DELTA = 2.f;
+	float spawnTimer = SPAWN_DELTA;
 };
 

@@ -55,6 +55,8 @@ namespace fe {
 
 				while (time > DELTA) {
 					sceneManager->onUpdate(DELTA);
+					physicsEngine->onUpdate(DELTA);
+
 					time -= DELTA;
 				}
 			}

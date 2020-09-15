@@ -17,6 +17,8 @@ namespace fe {
 		void setShape(std::shared_ptr<sf::Shape> _shape);
 		std::shared_ptr<sf::Shape> getShape();
 
+		void setColor(sf::Color _color);
+
 	private:
 		/*********** Internal shape */
 		std::shared_ptr<sf::Shape> shape;

@@ -8,6 +8,7 @@
 #include "Console.h"
 
 #include <cstdlib>
+#include "ProgressBar.h""
 
 MainScene::MainScene():
 	unit(nullptr)
@@ -20,47 +21,32 @@ MainScene::~MainScene()
 
 void MainScene::onInit()
 {
-	auto window = fe::EngineInstance.getMainWindow();
+	window = fe::EngineInstance.getMainWindow();
 	auto worldCenter = window->mapPixelToCoords(sf::Vector2i(window->getSize())) / 2.f;
 
-	// Spawn player
+	/*** Spawn player ***/
 	unit = std::make_shared<PlayerUnit>(shared_from_this());
 	unit->setPosition(worldCenter);
 	this->addChild(unit);
 
-	// Spawn obstacles
-	//auto obstaclePos = std::vector<sf::Vector2f>{
-	//	worldCenter + sf::Vector2f(-150.f, -150.f),
-	//	worldCenter + sf::Vector2f(150.f, -150.f),
-	//	worldCenter + sf::Vector2f(-150.f, 150.f),
-	//	worldCenter + sf::Vector2f(150.f, 150.f)
-	//};
+	/*** Spawn obstacles ***/
+	//this->spawnObstaclesRandom();
+	//this->spawnObstaclesNarrow();
+	this->spawnObstaclesFour();
 
-	//for (auto pos : obstaclePos) {
-	//	auto newObstacle = std::make_shared<Obstacle>(pos);
-	//	this->addChild(newObstacle);
-	//	this->obstacles.push_back(newObstacle);
-	//}
-
-	//this->spawnEnemy(sf::Vector2f(30, 30));
-
-	//for (int i = 0; i < 8; ++i) {
-	//	for (int j = 0; j < 8; ++j) {
-	//		auto pos = sf::Vector2f(60.f + 80.f * i, 60.f + 80.f * j);
-	//		auto newObstacle = std::make_shared<Obstacle>(pos);
-	//		this->addChild(newObstacle);
-	//		this->obstacles.push_back(newObstacle);
-	//	}
-	//}
-
-	// Spawn enemies
-	const int ENEMIES_NUM = 30;
+	/*** Spawn enemies ***/
+	const int ENEMIES_NUM = 20;
 	for (int i = 0; i < ENEMIES_NUM; ++i) {
 		int randX = (float)(rand() % window->getSize().x);
 		int randY = (float)(rand() % window->getSize().y);
 
 		this->spawnEnemy(sf::Vector2f(randX, randY));
 	}
+
+	/*** Show HP bar ***/
+	auto hp_bar = std::make_shared<ProgressBar>(sf::Vector2f(20.f, 40.f), 200.f);
+	unit->addHpBar(hp_bar);
+	this->addChild(hp_bar);
 }
 
 void MainScene::onExit()
@@ -69,10 +55,6 @@ void MainScene::onExit()
 
 void MainScene::onEvent(sf::Event& _event)
 {
-	if (_event.type == sf::Event::KeyPressed && _event.key.code == sf::Keyboard::A) {
-		//
-	}
-
 	// Spawn unit on click
 	if (_event.type == sf::Event::EventType::MouseButtonReleased && _event.mouseButton.button == sf::Mouse::Right) {
 		sf::Vector2i mousePos = sf::Vector2i(_event.mouseButton.x, _event.mouseButton.y);
@@ -85,22 +67,56 @@ void MainScene::onEvent(sf::Event& _event)
 
 void MainScene::onUpdate(double _dt)
 {
-	if (fe::EngineInstance.getInputManager()->isKeyPressed(sf::Keyboard::S)) {
-		//
+	// Spawner
+	if (spawnTimer >= 0.0) {
+		spawnTimer -= _dt;
+	}
+	else {
+		this->spawnEnemyRandom();
+		spawnTimer = SPAWN_DELTA;
+	}
+
+	// Update enemies
+	for (int i = 0; i < enemies.size(); /* conditional */) {
+		auto child = enemies[i];
+
+		if (child->isDisabled()) {
+			continue;
+		}
+
+		child->onBaseUpdate(_dt);
+
+		if (child->isDeleted()) {
+			int lastIt = enemies.size() - 1;
+			std::swap(enemies[i], enemies[lastIt]);
+
+			child->onExit();
+			enemies.pop_back();
+		}
+		else {
+			i++;
+		}
 	}
 }
 
 void MainScene::onDraw(sf::RenderTarget& _target)
 {
+	// Update enemies
+	for (auto enemy : enemies) {
+		if (enemy->isDisabled()) {
+			continue;
+		}
 
+		enemy->onBaseDraw(_target);
+	}
 }
 
-std::vector<std::weak_ptr<Obstacle>>& MainScene::getObstacles()
+std::vector<std::shared_ptr<Obstacle>>& MainScene::getObstacles()
 {
 	return obstacles;
 }
 
-std::vector<std::weak_ptr<Enemy>>& MainScene::getEnemies()
+std::vector<std::shared_ptr<Enemy>>& MainScene::getEnemies()
 {
 	return this->enemies;
 }
@@ -110,35 +126,100 @@ std::weak_ptr<PlayerUnit> MainScene::getPlayerUnit()
 	return unit;
 }
 
-void MainScene::tagEnemiesInRange(Enemy* _unit, float _range)
+int MainScene::tagEnemiesInRange(Enemy* _unit, float _range)
 {
 	sf::Vector2f start = _unit->getPosition();
+	int count = 0;
 
-	for (auto ptrWeakEnemy : this->enemies) {
-		auto ptrEnemy = ptrWeakEnemy.lock();
+	for (auto enemy : this->enemies) {
+		enemy->setTag(false);
 
-		if (!ptrEnemy) {
+		if (enemy.get() == _unit) {
 			continue;
 		}
 
-		ptrEnemy->setTag(false);
-
-		if (ptrEnemy.get() == _unit) {
-			continue;
-		}
-
-		float distSq = fe::math::lengthSquare(start - ptrEnemy->getPosition());
-		float radius = _range + ptrEnemy->getRadius();
+		float distSq = fe::math::lengthSquare(start - enemy->getPosition());
+		float radius = _range + enemy->getRadius();
 		if (distSq < radius * radius) {
-			ptrEnemy->setTag(true);
+			enemy->setTag(true);
+			count++;
 		}
 	}
+
+	return count;
+}
+
+bool MainScene::tryHitPlayer(Enemy* _unit, float _range)
+{
+	sf::Vector2f start = _unit->getPosition();
+	float distSq = fe::math::lengthSquare(start - unit->getPosition());
+
+	if (distSq < _range * _range) {
+		unit->onHit();
+		return true;
+	}
+
+	return false;
 }
 
 void MainScene::spawnEnemy(sf::Vector2f _pos)
 {
 	auto ptr = std::static_pointer_cast<MainScene>(shared_from_this());
+
 	auto newEnemy = std::make_shared<Enemy>(ptr, _pos);
+	newEnemy->onInit();
+	
 	this->enemies.push_back(newEnemy);
-	this->addChild(newEnemy);
+}
+
+void MainScene::spawnEnemyRandom()
+{
+	int randX = (float)(rand() % window->getSize().x);
+	int randY = (float)(rand() % window->getSize().y);
+
+	this->spawnEnemy(sf::Vector2f(randX, randY));
+}
+
+void MainScene::spawnObstaclesFour()
+{
+	auto worldCenter = window->mapPixelToCoords(sf::Vector2i(window->getSize())) / 2.f;
+
+	auto obstaclePos = std::vector<sf::Vector2f>{
+		worldCenter + sf::Vector2f(-150.f, -150.f),
+		worldCenter + sf::Vector2f(150.f, -150.f),
+		worldCenter + sf::Vector2f(-150.f, 150.f),
+		worldCenter + sf::Vector2f(150.f, 150.f)
+	};
+
+	for (auto pos : obstaclePos) {
+		auto newObstacle = std::make_shared<Obstacle>(pos);
+		this->addChild(newObstacle);
+		this->obstacles.push_back(newObstacle);
+	}
+}
+
+void MainScene::spawnObstaclesNarrow()
+{
+	for (int i = 0; i < 8; ++i) {
+		for (int j = 0; j < 8; ++j) {
+			auto pos = sf::Vector2f(60.f + 100.f * i, 60.f + 100.f * j);
+			auto newObstacle = std::make_shared<Obstacle>(pos);
+			this->addChild(newObstacle);
+			this->obstacles.push_back(newObstacle);
+		}
+	}
+}
+
+void MainScene::spawnObstaclesRandom()
+{
+	for (int i = 0; i < 15; ++i) {
+		int randX = (float)(rand() % window->getSize().x);
+		int randY = (float)(rand() % window->getSize().y);
+
+		auto pos = sf::Vector2f(randX, randY);
+		auto newObstacle = std::make_shared<Obstacle>(pos);
+
+		this->addChild(newObstacle);
+		this->obstacles.push_back(newObstacle);
+	}
 }

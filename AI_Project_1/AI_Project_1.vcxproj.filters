@@ -153,6 +153,9 @@
     <ClCompile Include="BoundingRect.cpp">
       <Filter>Source Files\Game\Units</Filter>
     </ClCompile>
+    <ClCompile Include="ProgressBar.cpp">
+      <Filter>Source Files\Game\Units</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Console.h">
@@ -219,6 +222,9 @@
       <Filter>Header Files\Game\Units</Filter>
     </ClInclude>
     <ClInclude Include="BoundingRect.h">
+      <Filter>Header Files\Game\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgressBar.h">
       <Filter>Header Files\Game\Units</Filter>
     </ClInclude>
   </ItemGroup>

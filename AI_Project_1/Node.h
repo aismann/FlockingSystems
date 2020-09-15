@@ -33,7 +33,7 @@ namespace fe {
 		void addChild(std::shared_ptr<Node> _child);
 
 		/*********** Settings */
-		void setDeleted();
+		virtual void setDeleted();
 		bool isDeleted();
 
 		void setDisabled(bool _val);

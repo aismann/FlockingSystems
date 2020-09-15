@@ -33,4 +33,11 @@ namespace fe {
 		return this->shape;
 	}
 
+	void Shape2D::setColor(sf::Color _color)
+	{
+		if (shape) {
+			shape->setFillColor(_color);
+		}
+	}
+
 }

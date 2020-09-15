@@ -10,6 +10,10 @@ class MainScene;
 class Line;
 class BoundingRect;
 
+namespace fe {
+	class Shape2D;
+}
+
 class Enemy:
 	public fe::PhysicNode
 {
@@ -28,6 +32,8 @@ public:
 
 	/*********** Game logic */
 	void						rayHit();
+	void						setAttacking(bool _attacking);
+	void						setColor(sf::Color _color);
 
 	void						setTag(bool _tag);
 	bool						isTagged();
@@ -37,9 +43,16 @@ public:
 
 protected:
 	/*********** Movement */
+	void						updatePosition(double _dt);
 	void						wrapScreen();
 
 protected:
+	/*********** Components */
+	static const sf::Color COLOR_BASIC;
+	static const sf::Color COLOR_ATTACKING;
+
+	std::shared_ptr<fe::Shape2D> circle;
+
 	/*********** Settings */
 	sf::Vector2u		worldSizeEnd;	// size of a visible world
 	float				radius;			// half size of a enemy
@@ -51,15 +64,17 @@ protected:
 	std::weak_ptr<MainScene>			mainScene;
 
 	/*********** Debug */
-	std::shared_ptr<BoundingRect>	debugBoundingRect;
-	std::shared_ptr<Line>			debugVectorVelocity;
-	std::shared_ptr<Line>			debugVectorHeading;
-	std::shared_ptr<Line>			debugVectorSide;
-	std::shared_ptr<Line>			debugVectorAvoid;
-	std::shared_ptr<Line>			debugVectorWander;
-	std::shared_ptr<Line>			debugVectorHide;
+	//std::shared_ptr<BoundingRect>	debugBoundingRect;
+	//std::shared_ptr<Line>			debugVectorVelocity;
+	//std::shared_ptr<Line>			debugVectorPursuit;
+	//std::shared_ptr<Line>			debugVectorHeading;
+	//std::shared_ptr<Line>			debugVectorSide;
+	//std::shared_ptr<Line>			debugVectorAvoid;
+	//std::shared_ptr<Line>			debugVectorWander;
+	//std::shared_ptr<Line>			debugVectorHide;
+	//std::shared_ptr<Line>			debugVectorFlee;
 
-	std::shared_ptr<Line>			debugVectorCohesion;
-	std::shared_ptr<Line>			debugVectorSeparation;
-	std::shared_ptr<Line>			debugVectorAlignment;
+	//std::shared_ptr<Line>			debugVectorCohesion;
+	//std::shared_ptr<Line>			debugVectorSeparation;
+	//std::shared_ptr<Line>			debugVectorAlignment;
 };

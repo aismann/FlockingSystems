@@ -3,18 +3,28 @@
 #include "ColliderCircle.h"
 
 namespace fe {
-	std::shared_ptr<Contact> checkColliderCollision(std::shared_ptr<ColliderCircle> _collider1, std::shared_ptr<ColliderCircle> _collider2)
+	void flipContact(Contact& _contact)
 	{
-		auto result = std::shared_ptr<Contact>();
+		_contact.normal = (-_contact.normal);
+		std::swap(_contact.myGameObject, _contact.otherGameObject);
+	};
 
-		float dist = math::length(_collider1->getPosition() - _collider2->getPosition());
-		float radiusSum = (_collider1->getRadius() + _collider2->getRadius(), 2);
+	bool checkColliderCollision(Contact& _result, std::shared_ptr<ColliderCircle> _collider1, std::shared_ptr<ColliderCircle> _collider2)
+	{
+		sf::Vector2f posCollider1 = _collider1->getGlobalTransform().transformPoint(sf::Vector2f());
+		sf::Vector2f posCollider2 = _collider2->getGlobalTransform().transformPoint(sf::Vector2f());
+
+		float dist = math::length(posCollider1 - posCollider2);
+		float radiusSum = _collider1->getRadius() + _collider2->getRadius();
+		
 		if (dist <= radiusSum) {
-			result->normal = math::normalize(_collider2->getPosition() - _collider1->getPosition());
-			result->conctactPoint = (_collider1->getPosition() + _collider2->getPosition()) / 2.f;
-			result->collisionDepth = (radiusSum - dist) / 2.f;
+			_result.normal = math::normalize(posCollider1 - posCollider2);
+			_result.conctactPoint = (posCollider1 + posCollider2) / 2.f;
+			_result.collisionDepth = (radiusSum - dist) / 2.f;
+
+			return true;
 		}
 
-		return result;
+		return false;
 	}
 }

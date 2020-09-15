@@ -19,8 +19,10 @@ namespace fe {
 		float					collisionDepth;
 	};
 
+	void flipContact(Contact& _contact);
+
 	/*********** Resolve for different colliders */
-	std::shared_ptr<Contact> checkColliderCollision(std::shared_ptr<ColliderCircle> _collider1, std::shared_ptr<ColliderCircle> _collider2);
+	bool checkColliderCollision(Contact& _result, std::shared_ptr<ColliderCircle> _collider1, std::shared_ptr<ColliderCircle> _collider2);
 	
 }
 

@@ -30,10 +30,6 @@ namespace fe {
 	private:
 		/*********** Simulation bodies */
 		std::vector<std::shared_ptr<PhysicNode>> bodies;
-
-		// Delete tagged bodies 
-		const float deleteInterval = 5.f;
-		float deleteTimer = deleteInterval;
 	};
 };
 
